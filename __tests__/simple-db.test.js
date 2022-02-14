@@ -40,4 +40,17 @@ describe('simple database', () => {
 
     expect(file).toEqual(newTestObj);
   });
+
+  it('should get all file contents in the db', async () => {
+    const testObjAnyId = { ...testObj, id: expect.any(String) };
+    const expectedArr = new Array(3).fill(testObjAnyId);
+
+    await newDB.save(testObj);
+    await newDB.save(testObj);
+    await newDB.save(testObj);
+
+    const files = await newDB.getAll();
+
+    expect(files).toEqual(expectedArr);
+  });
 });
