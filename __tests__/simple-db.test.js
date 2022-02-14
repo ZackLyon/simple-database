@@ -8,8 +8,8 @@ const BASE_DIR = CI ? HOME : __dirname;
 const TEST_DIR = path.join(BASE_DIR, 'test-dir');
 
 const id = nanoid(5);
-const testObj = { id, message: 'this is where the magic happens' };
-const testJSONobj = JSON.stringify(testObj);
+const testObj = { message: 'this is where the magic happens' };
+const testJSONobj = JSON.stringify({ testObj, id });
 let newDB;
 
 describe('simple database', () => {
@@ -24,12 +24,20 @@ describe('simple database', () => {
     await fs.writeFile(filePath, testJSONobj);
 
     const file = await newDB.get(id);
-    expect(file).toEqual(testObj);
+    expect(file).toEqual({ testObj, id });
   });
 
   it('should return null if get(id) does not find a file', async () => {
     const file = await newDB.get('fakeId');
 
     expect(file).toBeNull();
+  });
+
+  it('should save an obj to test directory with id as filename', async () => {
+    const newTestObj = { ...testObj };
+    await newDB.save(newTestObj);
+    const file = await newDB.get(newTestObj.id);
+
+    expect(file).toEqual(newTestObj);
   });
 });
